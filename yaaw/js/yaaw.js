@@ -50,6 +50,15 @@ var YAAW = (function() {
 
     event_init: function() {
 
+      $("#ib-options-form").submit(function() {
+        return false;
+      });
+      $("#add-task-option").submit(function() {
+          YAAW.add_task.submit();return false;
+      });
+      $("#aria2-gs-form").submit(function() {
+        return false;
+      });
       $("#add-task-submit").live("click", function() {
         YAAW.add_task.submit();return false;
       });
