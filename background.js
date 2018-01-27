@@ -56,7 +56,7 @@ function addContextMenu(id, title) {
         contexts: ['link']
     });
 }
-//弹出chrome通知
+//弹出通知
 function showNotification(id, opt) {
     var notification = chrome.notifications.create(id, opt, function(notifyId) {
         return notifyId
@@ -122,9 +122,9 @@ function aria2Send(link, url, output) {
                 var opt = {
                     type: "basic",
                     title: "开始下载",
-                    message: output.filename || "导出下载成功~",
-                    iconUrl: output.icon || "images/icon.jpg"
-                }
+                    message: output && output.filename || "导出下载成功~",
+                    iconUrl: output && output.icon || "images/icon.jpg"
+                };
                 var id = new Date().getTime().toString();
                 showNotification(id, opt);
             })
@@ -135,7 +135,7 @@ function aria2Send(link, url, output) {
                     title: "下载失败",
                     message: "导出下载失败! QAQ",
                     iconUrl: "images/icon.jpg"
-                }
+                };
                 var id = new Date().getTime().toString();
                 showNotification(id, opt);
             });
@@ -197,6 +197,17 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 
 });
 
+if (chrome.runtime.getBrowserInfo) {    // firefox
+chrome.downloads.onCreated.addListener(function (downloadItem) {
+    var integration = localStorage.getItem("integration");
+    if (integration == "true" && isCapture(downloadItem)) {
+        var rpc_list = JSON.parse(localStorage.getItem("rpc_list") || defaultRPC);
+        console.log(decodeURIComponent(downloadItem.filename));
+        aria2Send(downloadItem.url, rpc_list[0]['url'], null);
+        chrome.downloads.cancel(downloadItem.id, function () {});
+    }
+});
+} else {
 chrome.downloads.onDeterminingFilename.addListener(function(downloadItem) {
     var integration = localStorage.getItem("integration");
     if (integration == "true" && isCapture(downloadItem)) {
@@ -219,7 +230,7 @@ chrome.downloads.onDeterminingFilename.addListener(function(downloadItem) {
         }, 500);
     }
 });
-
+}
 
 /*
 chrome.webRequest.onHeadersReceived.addListener(function(details){
@@ -258,7 +269,7 @@ chrome.webRequest.onHeadersReceived.addListener(function(details){
 */
 chrome.browserAction.onClicked.addListener(function() {
     var index = chrome.extension.getURL('yaaw/index.html');
-    chrome.tabs.getAllInWindow(undefined, function(tabs) {
+    chrome.tabs.query({}, function(tabs) {
         for (var i = 0, tab; tab = tabs[i]; i++) {
             if (tab.url && tab.url == index) {
                 chrome.tabs.update(tab.id, { selected: true });
@@ -277,7 +288,7 @@ if (previousVersion == "" || previousVersion != manifest.version) {
     var opt = {
         type: "basic",
         title: "更新",
-        message: "YAAW for Chrome更新到" + manifest.version + "版本啦～\n此次更新支持通配符匹配~",
+        message: "YAAW WE更新到" + manifest.version + "版本啦～\n此次更新支持通配符匹配~",
         iconUrl: "images/icon.jpg"
     };
     var id = new Date().getTime().toString();
