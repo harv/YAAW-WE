@@ -444,25 +444,20 @@ if (typeof ARIA2=="undefined"||!ARIA2) var ARIA2=(function(){
 
           result = ARIA2.status_fix(result.result);
 
-          if (finished_tasks_list === undefined) {
-            finished_tasks_list = new Array();
+            if (finished_tasks_list === undefined) {
+                finished_tasks_list = new Array();
+            }
+
             $.each(result, function(i, e) {
-              if (e.status != "complete")
-                return;
-              finished_tasks_list.push(e.gid);
+                if (e.status != "complete")
+                    return;
+                if (finished_tasks_list.indexOf(e.gid) != -1)
+                    return;
+                if (ARIA2.finish_notification) {
+                    YAAW.notification("Aria2 Task Finished", e.title);
+                }
+                finished_tasks_list.push(e.gid);
             });
-          } else {
-            $.each(result, function(i, e) {
-              if (e.status != "complete")
-                return;
-              if (finished_tasks_list.indexOf(e.gid) != -1)
-                return;
-              if (ARIA2.finish_notification) {
-                YAAW.notification("Aria2 Task Finished", e.title);
-              }
-              finished_tasks_list.push(e.gid);
-            });
-          }
 
           $("#stopped-tasks-table").empty().append(YAAW.tpl.other_task({"tasks": result.reverse()}));
           $.each(result, function(n, e) {
