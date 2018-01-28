@@ -21,6 +21,7 @@
    "permissions": [ "cookies", "tabs", "notifications", "activeTab", "contextMenus", "downloads", "<all_urls>"],
    "name": "__MSG_appName__",
    "version": "0.0.9",
+   "homepage_url": "https://github.com/harv/YAAW-WE",
    "applications": {
       "gecko": {
          "id": "yaaw@firefox",
