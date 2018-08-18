@@ -205,6 +205,7 @@ chrome.downloads.onCreated.addListener(function (downloadItem) {
         console.log(decodeURIComponent(downloadItem.filename));
         aria2Send(downloadItem.url, rpc_list[0]['url'], null);
         chrome.downloads.cancel(downloadItem.id, function () {});
+        chrome.downloads.erase({ id: downloadItem.id });
     }
 });
 } else {
